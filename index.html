@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>MarketPulse AI</title>
+
+  <!-- Lightweight Charts -->
+  <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #07111f;
+      color: #eaf2ff;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 1250px;
+      margin: auto;
+      padding: 25px 0 50px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: 32px;
+    }
+
+    .subtitle {
+      color: #8194ad;
+      margin-top: 0;
+    }
+
+    .card {
+      background: #0d1a2b;
+      border: 1px solid #263d59;
+      border-radius: 16px;
+      padding: 18px;
+      margin-top: 18px;
+    }
+
+    .search {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input,
+    select,
+    button {
+      height: 46px;
+      border-radius: 9px;
+      border: 1px solid #29415e;
+      background: #081525;
+      color: white;
+      padding: 0 14px;
+      font-size: 15px;
+    }
+
+    input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    select {
+      min-width: 130px;
+    }
+
+    button {
+      background: #2563eb;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      min-width: 140px;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #status {
+      color: #8194ad;
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns:
+        repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      background: #081525;
+      padding: 14px;
+      border-radius: 10px;
+    }
+
+    .metric-title {
+      color: #8194ad;
+      font-size: 12px;
+    }
+
+    .metric-value {
+      margin-top: 5px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .bull {
+      color: #46d39a;
+    }
+
+    .bear {
+      color: #ff6575;
+    }
+
+    .neutral {
+      color: #f4c95d;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      color: #a5b5c9;
+      font-size: 13px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    #priceChart {
+      width: 100%;
+      height: 520px;
+    }
+
+    #rsiChart {
+      width: 100%;
+      height: 180px;
+      margin-top: 15px;
+    }
+
+    .chart-label {
+      color: #8194ad;
+      font-size: 12px;
+      margin-bottom: -8px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .notice {
+      color: #8194ad;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media(max-width: 800px) {
+
+      .container {
+        width: 94%;
+      }
+
+      .metrics {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      #priceChart {
+        height: 430px;
+      }
+
+      #rsiChart {
+        height: 160px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+  <h1>📈 MarketPulse AI</h1>
+
+  <p class="subtitle">
+    Interactive AI-assisted stock market analysis
+  </p>
+
+
+  <!-- SEARCH -->
+
+  <div class="card">
+
+    <div class="search">
+
+      <input
+        id="symbol"
+        type="text"
+        placeholder="e.g. TCS, INFY, SBIN"
+        autocomplete="off"
+      >
+
+      <select id="range">
+
+        <option value="6mo">
+          6 Months
+        </option>
+
+        <option value="1y" selected>
+          1 Year
+        </option>
+
+        <option value="2y">
+          2 Years
+        </option>
+
+      </select>
+
+      <button onclick="loadStock()">
+        Analyze Stock
+      </button>
+
+    </div>
+
+    <p id="status">
+      Enter an NSE stock symbol to begin.
+    </p>
+
+  </div>
+
+
+  <!-- RESULT -->
+
+  <div
+    id="results"
+    style="display:none;"
+  >
+
+    <div class="card">
+
+      <div class="metrics">
+
+        <div class="metric">
+
+          <div class="metric-title">
+            STOCK
+          </div>
+
+          <div
+            id="stockName"
+            class="metric-value"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-title">
+            LAST PRICE
+          </div>
+
+          <div
+            id="price"
+            class="metric-value"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-title">
+            1D CHANGE
+          </div>
+
+          <div
+            id="change"
+            class="metric-value"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-title">
+            RSI
+          </div>
+
+          <div
+            id="rsi"
+            class="metric-value"
+          >
+            —
+          </div>
+
+        </div>
+
+
+        <div class="metric">
+
+          <div class="metric-title">
+            SIGNAL
+          </div>
+
+          <div
+            id="signal"
+            class="metric-value"
+          >
+            —
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PRICE CHART -->
+
+    <div class="card">
+
+      <div class="chart-header">
+
+        <h3>
+          Price & Technical Analysis
+        </h3>
+
+        <div class="legend">
+
+          <div class="legend-item">
+            <span
+              class="dot"
+              style="background:#60a5fa"
+            ></span>
+            MA20
+          </div>
+
+          <div class="legend-item">
+            <span
+              class="dot"
+              style="background:#f4c95d"
+            ></span>
+            MA50
+          </div>
+
+          <div class="legend-item">
+            🟢 Buy
+          </div>
+
+          <div class="legend-item">
+            🔴 Sell
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="chart-label">
+        Candlestick + Volume
+      </div>
+
+      <div id="priceChart"></div>
+
+      <div class="chart-label">
+        RSI (14)
+      </div>
+
+      <div id="rsiChart"></div>
+
+    </div>
+
+
+    <div class="card notice">
+
+      <b>Chart controls:</b>
+
+      Move your finger/mouse over the chart to use the
+      crosshair and inspect price/date.
+
+      Drag to move through history.
+
+      Pinch or scroll to zoom.
+
+      🟢 Buy/Sell markers are generated from simple
+      technical signals and are not guaranteed predictions.
+
+      <br><br>
+
+      <b>Risk Notice:</b>
+      MarketPulse AI is for educational purposes only
+      and does not provide financial advice.
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+let priceChart = null;
+let rsiChart = null;
+
+let candleSeries = null;
+let volumeSeries = null;
+let ma20Series = null;
+let ma50Series = null;
+let rsiSeries = null;
+
+
+/* =========================
+   FORMAT
+========================= */
+
+function formatNumber(value) {
+
+  return Number(value)
+    .toLocaleString(
+      "en-IN",
+      {
+        maximumFractionDigits: 2
+      }
+    );
+
+}
+
+
+/* =========================
+   MOVING AVERAGE
+========================= */
+
+function calculateMA(data, period) {
+
+  const result = [];
+
+  for (
+    let i = 0;
+    i < data.length;
+    i++
+  ) {
+
+    if (i < period - 1) {
+      continue;
+    }
+
+    let sum = 0;
+
+    for (
+      let j = i - period + 1;
+      j <= i;
+      j++
+    ) {
+
+      sum += data[j].close;
+
+    }
+
+    result.push({
+
+      time: data[i].time,
+
+      value:
+        sum / period
+
+    });
+
+  }
+
+  return result;
+
+}
+
+
+/* =========================
+   RSI
+========================= */
+
+function calculateRSI(data, period = 14) {
+
+  const result = [];
+
+  for (
+    let i = period;
+    i < data.length;
+    i++
+  ) {
+
+    let gains = 0;
+    let losses = 0;
+
+    for (
+      let j = i - period + 1;
+      j <= i;
+      j++
+    ) {
+
+      const change =
+        data[j].close -
+        data[j - 1].close;
+
+      if (change > 0) {
+
+        gains += change;
+
+      } else {
+
+        losses += Math.abs(change);
+
+      }
+
+    }
+
+    let rsi = 50;
+
+    if (losses === 0) {
+
+      rsi = 100;
+
+    } else {
+
+      const rs =
+        gains / losses;
+
+      rsi =
+        100 -
+        (100 / (1 + rs));
+
+    }
+
+    result.push({
+
+      time: data[i].time,
+
+      value: rsi
+
+    });
+
+  }
+
+  return result;
+
+}
+
+
+/* =========================
+   BUY / SELL MARKERS
+========================= */
+
+function generateMarkers(data) {
+
+  const markers = [];
+
+  const ma20 =
+    calculateMA(data, 20);
+
+  const ma50 =
+    calculateMA(data, 50);
+
+  const ma20Map =
+    new Map(
+      ma20.map(
+        item =>
+          [item.time, item.value]
+      )
+    );
+
+  const ma50Map =
+    new Map(
+      ma50.map(
+        item =>
+          [item.time, item.value]
+      )
+    );
+
+
+  for (
+    let i = 50;
+    i < data.length;
+    i++
+  ) {
+
+    const item =
+      data[i];
+
+    const currentMA20 =
+      ma20Map.get(item.time);
+
+    const currentMA50 =
+      ma50Map.get(item.time);
+
+
+    if (
+      !currentMA20 ||
+      !currentMA50
+    ) {
+
+      continue;
+
+    }
+
+
+    const previous =
+      data[i - 1];
+
+    const previousMA20 =
+      ma20Map.get(previous.time);
+
+
+    /*
+      BUY:
+      MA20 crosses above MA50
+    */
+
+    if (
+      previousMA20 <= currentMA50 &&
+      currentMA20 > currentMA50
+    ) {
+
+      markers.push({
+
+        time: item.time,
+
+        position: "belowBar",
+
+        color: "#46d39a",
+
+        shape: "arrowUp",
+
+        text: "BUY"
+
+      });
+
+    }
+
+
+    /*
+      SELL:
+      MA20 crosses below MA50
+    */
+
+    if (
+      previousMA20 >= currentMA50 &&
+      currentMA20 < currentMA50
+    ) {
+
+      markers.push({
+
+        time: item.time,
+
+        position: "aboveBar",
+
+        color: "#ff6575",
+
+        shape: "arrowDown",
+
+        text: "SELL"
+
+      });
+
+    }
+
+  }
+
+  return markers;
+
+}
+
+
+/* =========================
+   CREATE CHARTS
+========================= */
+
+function createCharts(data) {
+
+  document.getElementById(
+    "priceChart"
+  ).innerHTML = "";
+
+  document.getElementById(
+    "rsiChart"
+  ).innerHTML = "";
+
+
+  const chartOptions = {
+
+    layout: {
+
+      background: {
+        color: "#0b1727"
+      },
+
+      textColor: "#8fa4bc"
+
+    },
+
+    grid: {
+
+      vertLines: {
+        color: "#17283c"
+      },
+
+      horzLines: {
+        color: "#17283c"
+      }
+
+    },
+
+    crosshair: {
+
+      mode:
+        LightweightCharts.CrosshairMode.Normal
+
+    },
+
+    rightPriceScale: {
+
+      borderColor: "#263d59"
+
+    },
+
+    timeScale: {
+
+      borderColor: "#263d59",
+
+      timeVisible: true,
+
+      secondsVisible: false,
+
+      rightOffset: 5,
+
+      barSpacing: 8,
+
+      minBarSpacing: 2
+
+    },
+
+    handleScroll: {
+
+      mouseWheel: true,
+
+      pressedMouseMove: true,
+
+      horzTouchDrag: true,
+
+      vertTouchDrag: true
+
+    },
+
+    handleScale: {
+
+      axisPressedMouseMove: true,
+
+      mouseWheel: true,
+
+      pinch: true
+
+    }
+
+  };
+
+
+  /* PRICE CHART */
+
+  priceChart =
+    LightweightCharts.createChart(
+      document.getElementById(
+        "priceChart"
+      ),
+      chartOptions
+    );
+
+
+  /* Candles */
+
+  candleSeries =
+    priceChart.addCandlestickSeries({
+
+      upColor: "#26a69a",
+
+      downColor: "#ef5350",
+
+      borderUpColor: "#26a69a",
+
+      borderDownColor: "#ef5350",
+
+      wickUpColor: "#26a69a",
+
+      wickDownColor: "#ef5350"
+
+    });
+
+
+  candleSeries.setData(
+    data
+  );
+
+
+  /* MA20 */
+
+  ma20Series =
+    priceChart.addLineSeries({
+
+      color: "#60a5fa",
+
+      lineWidth: 2,
+
+      priceLineVisible: false,
+
+      lastValueVisible: true
+
+    });
+
+
+  ma20Series.setData(
+    calculateMA(data, 20)
+  );
+
+
+  /* MA50 */
+
+  ma50Series =
+    priceChart.addLineSeries({
+
+      color: "#f4c95d",
+
+      lineWidth: 2,
+
+      priceLineVisible: false,
+
+      lastValueVisible: true
+
+    });
+
+
+  ma50Series.setData(
+    calculateMA(data, 50)
+  );
+
+
+  /* Volume */
+
+  volumeSeries =
+    priceChart.addHistogramSeries({
+
+      priceFormat: {
+        type: "volume"
+      },
+
+      priceScaleId: ""
+
+    });
+
+
+  volumeSeries.priceScale()
+    .applyOptions({
+
+      scaleMargins: {
+
+        top: 0.78,
+
+        bottom: 0
+
+      }
+
+    });
+
+
+  volumeSeries.setData(
+
+    data.map(item => ({
+
+      time: item.time,
+
+      value: item.volume,
+
+      color:
+        item.close >= item.open
+          ? "rgba(38,166,154,0.45)"
+          : "rgba(239,83,80,0.45)"
+
+    }))
+
+  );
+
+
+  /* RSI CHART */
+
+  rsiChart =
+    LightweightCharts.createChart(
+
+      document.getElementById(
+        "rsiChart"
+      ),
+
+      {
+
+        ...chartOptions,
+
+        rightPriceScale: {
+
+          borderColor: "#263d59",
+
+          autoScale: false
+
+        }
+
+      }
+
+    );
+
+
+  rsiSeries =
+    rsiChart.addLineSeries({
+
+      color: "#c084fc",
+
+      lineWidth: 2,
+
+      priceLineVisible: false
+
+    });
+
+
+  const rsiData =
+    calculateRSI(data);
+
+
+  rsiSeries.setData(
+    rsiData
+  );
+
+
+  rsiSeries.createPriceLine({
+
+    price: 70,
+
+    color: "#ff6575",
+
+    lineWidth: 1,
+
+    lineStyle:
+      LightweightCharts.LineStyle.Dashed,
+
+    axisLabelVisible: true,
+
+    title: "Overbought"
+
+  });
+
+
+  rsiSeries.createPriceLine({
+
+    price: 30,
+
+    color: "#46d39a",
+
+    lineWidth: 1,
+
+    lineStyle:
+      LightweightCharts.LineStyle.Dashed,
+
+    axisLabelVisible: true,
+
+    title: "Oversold"
+
+  });
+
+
+  rsiChart.priceScale(
+    "right"
+  ).applyOptions({
+
+    autoScale: false,
+
+    scaleMargins: {
+
+      top: 0.05,
+
+      bottom: 0.05
+
+    }
+
+  });
+
+
+  rsiSeries.applyOptions({
+
+    autoscaleInfoProvider: () => ({
+
+      priceRange: {
+
+        minValue: 0,
+
+        maxValue: 100
+
+      }
+
+    })
+
+  });
+
+
+  /* BUY / SELL */
+
+  const markers =
+    generateMarkers(data);
+
+
+  candleSeries.setMarkers(
+    markers
+  );
+
+
+  /* Initial range */
+
+  priceChart.timeScale()
+    .fitContent();
+
+  rsiChart.timeScale()
+    .fitContent();
+
+
+  /* Synchronize time scales */
+
+  priceChart.timeScale()
+    .subscribeVisibleLogicalRangeChange(
+      range => {
+
+        if (range) {
+
+          rsiChart.timeScale()
+            .setVisibleLogicalRange(
+              range
+            );
+
+        }
+
+      }
+    );
+
+
+  rsiChart.timeScale()
+    .subscribeVisibleLogicalRangeChange(
+      range => {
+
+        if (range) {
+
+          priceChart.timeScale()
+            .setVisibleLogicalRange(
+              range
+            );
+
+        }
+
+      }
+    );
+
+
+  /* Crosshair sync */
+
+  priceChart.subscribeCrosshairMove(
+    param => {
+
+      if (
+        !param ||
+        !param.time
+      ) {
+
+        return;
+
+      }
+
+      try {
+
+        rsiChart.setCrosshairPosition(
+          0,
+          param.time,
+          rsiSeries
+        );
+
+      } catch(e) {}
+
+    }
+  );
+
+
+  /* Responsive */
+
+  const resize =
+    () => {
+
+      const width =
+        document.getElementById(
+          "priceChart"
+        ).clientWidth;
+
+      priceChart.resize(
+        width,
+        520
+      );
+
+      rsiChart.resize(
+        width,
+        180
+      );
+
+    };
+
+
+  window.addEventListener(
+    "resize",
+    resize
+  );
+
+}
+
+
+/* =========================
+   LOAD STOCK
+========================= */
+
+async function loadStock() {
+
+  const input =
+    document.getElementById(
+      "symbol"
+    );
+
+  const symbol =
+    input.value
+      .trim()
+      .toUpperCase();
+
+
+  if (!symbol) {
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "Please enter a stock symbol, for example TCS.";
+
+    input.focus();
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    "Loading market data...";
+
+
+  try {
+
+    const response =
+      await fetch(
+
+        "/api/stock?symbol=" +
+        encodeURIComponent(symbol) +
+        "&range=" +
+        document.getElementById(
+          "range"
+        ).value
+
+      );
+
+
+    const result =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        result.error ||
+        "Unable to load stock."
+      );
+
+    }
+
+
+    if (
+      !result.history ||
+      result.history.length < 50
+    ) {
+
+      throw new Error(
+        "Not enough historical data."
+      );
+
+    }
+
+
+    /* Convert API data */
+
+    const data =
+      result.history.map(
+        item => ({
+
+          time:
+            item.date,
+
+          open:
+            Number(item.open),
+
+          high:
+            Number(item.high),
+
+          low:
+            Number(item.low),
+
+          close:
+            Number(item.close),
+
+          volume:
+            Number(item.volume || 0)
+
+        })
+      );
+
+
+    /* Metrics */
+
+    document.getElementById(
+      "stockName"
+    ).textContent =
+      symbol;
+
+
+    document.getElementById(
+      "price"
+    ).textContent =
+      "₹" +
+      formatNumber(
+        result.last
+      );
+
+
+    const change =
+      Number(result.change);
+
+
+    const changeElement =
+      document.getElementById(
+        "change"
+      );
+
+
+    changeElement.textContent =
+      (change >= 0 ? "+" : "") +
+      formatNumber(change) +
+      "%";
+
+
+    changeElement.className =
+      "metric-value " +
+      (
+        change >= 0
+          ? "bull"
+          : "bear"
+      );
+
+
+    document.getElementById(
+      "rsi"
+    ).textContent =
+      formatNumber(
+        result.rsi
+      );
+
+
+    const signalElement =
+      document.getElementById(
+        "signal"
+      );
+
+
+    signalElement.textContent =
+      result.signal;
+
+
+    signalElement.className =
+      "metric-value " +
+      (
+        result.signal === "BULLISH"
+          ? "bull"
+          :
+        result.signal === "BEARISH"
+          ? "bear"
+          : "neutral"
+      );
+
+
+    /* Show */
+
+    document.getElementById(
+      "results"
+    ).style.display =
+      "block";
+
+
+    /* Draw */
+
+    createCharts(data);
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "Showing " +
+      data.length +
+      " trading sessions.";
+
+
+  } catch(error) {
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      error.message;
+
+    console.error(error);
+
+  }
+
+}
+
+
+/* Enter key */
+
+document.getElementById(
+  "symbol"
+).addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.key === "Enter"
+    ) {
+
+      loadStock();
+
+    }
+
+  }
+);
+
+</script>
+
+</body>
+</html>
