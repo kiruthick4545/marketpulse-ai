@@ -1,0 +1,807 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>MarketPulse AI</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #07111f;
+      color: #eaf2ff;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 20px;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .card {
+      background: #0d1a2b;
+      border: 1px solid #29415e;
+      border-radius: 16px;
+      padding: 18px;
+      margin: 15px 0;
+    }
+
+    input,
+    select,
+    button {
+      height: 44px;
+      border-radius: 9px;
+      border: 1px solid #29415e;
+      background: #091626;
+      color: white;
+      padding: 0 12px;
+      font-size: 15px;
+    }
+
+    input {
+      width: 45%;
+    }
+
+    button {
+      background: #2563eb;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .chart {
+      height: 480px;
+      background: #091626;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .chart svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .muted {
+      color: #8194ad;
+      font-size: 13px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      background: #091626;
+      padding: 12px;
+      border-radius: 10px;
+    }
+
+    .value {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    .bull {
+      color: #46d39a;
+    }
+
+    .bear {
+      color: #ff6b7a;
+    }
+
+    .neutral {
+      color: #f4c95d;
+    }
+
+    .legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin: 12px 0;
+      color: #9eb1c8;
+      font-size: 13px;
+    }
+
+    .legend span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    @media (max-width: 700px) {
+
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      input {
+        width: 100%;
+      }
+
+      select,
+      button {
+        width: 100%;
+      }
+
+      .chart {
+        height: 410px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<main>
+
+  <h1>📈 MarketPulse AI</h1>
+
+  <p class="muted">
+    NSE stock analysis with candlesticks, volume and moving averages
+  </p>
+
+  <!-- SEARCH -->
+  <div class="card">
+
+    <input
+      id="symbol"
+      value="RELIANCE"
+      placeholder="Enter NSE symbol"
+    >
+
+    <select id="range">
+      <option value="6mo">6 Months</option>
+      <option value="1y" selected>1 Year</option>
+      <option value="2y">2 Years</option>
+    </select>
+
+    <button onclick="loadStock()">
+      Analyze
+    </button>
+
+    <p id="status" class="muted">
+      Ready
+    </p>
+
+  </div>
+
+
+  <!-- RESULTS -->
+  <div id="results" style="display:none">
+
+    <div class="card">
+
+      <h2 id="signal"></h2>
+
+      <div class="metrics">
+
+        <div class="metric">
+          <span class="muted">Last Price</span>
+          <div id="price" class="value">—</div>
+        </div>
+
+        <div class="metric">
+          <span class="muted">1D Change</span>
+          <div id="change" class="value">—</div>
+        </div>
+
+        <div class="metric">
+          <span class="muted">RSI</span>
+          <div id="rsi" class="value">—</div>
+        </div>
+
+        <div class="metric">
+          <span class="muted">Trend Score</span>
+          <div id="score" class="value">—</div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- CHART -->
+    <div class="card">
+
+      <h3>Technical Chart</h3>
+
+      <div class="legend">
+
+        <span>
+          <i class="dot" style="background:#46d39a"></i>
+          Bullish Candle
+        </span>
+
+        <span>
+          <i class="dot" style="background:#ff6b7a"></i>
+          Bearish Candle
+        </span>
+
+        <span>
+          <i class="dot" style="background:#60a5fa"></i>
+          MA20
+        </span>
+
+        <span>
+          <i class="dot" style="background:#f4c95d"></i>
+          MA50
+        </span>
+
+        <span>
+          Volume
+        </span>
+
+      </div>
+
+      <div id="chart" class="chart"></div>
+
+      <p id="chartInfo" class="muted"></p>
+
+    </div>
+
+  </div>
+
+
+  <div class="card muted">
+
+    <b>Risk Notice:</b>
+    This website provides educational market analysis only.
+    Stock predictions are not guaranteed and should not be treated as financial advice.
+
+  </div>
+
+</main>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+function formatNumber(value) {
+
+  return Number(value).toLocaleString(
+    "en-IN",
+    {
+      maximumFractionDigits: 2
+    }
+  );
+
+}
+
+
+/* ==============================
+   MOVING AVERAGE
+================================ */
+
+function movingAverage(data, period, index) {
+
+  if (index < period - 1) {
+    return null;
+  }
+
+  let total = 0;
+
+  for (
+    let i = index - period + 1;
+    i <= index;
+    i++
+  ) {
+
+    total += data[i];
+
+  }
+
+  return total / period;
+
+}
+
+
+/* ==============================
+   DRAW CHART
+================================ */
+
+function drawChart(data) {
+
+  if (!data || data.length < 50) {
+
+    $("chart").innerHTML =
+      "<p class='muted' style='padding:20px'>Not enough history for MA20 and MA50.</p>";
+
+    return;
+
+  }
+
+
+  const W = 1100;
+  const H = 480;
+
+  const LEFT = 58;
+  const RIGHT = 15;
+
+  const TOP = 15;
+  const PRICE_BOTTOM = 305;
+
+  const VOLUME_TOP = 330;
+  const VOLUME_BOTTOM = 450;
+
+
+  const closes = data.map(
+    item => Number(item.close)
+  );
+
+  const highs = data.map(
+    item => Number(item.high)
+  );
+
+  const lows = data.map(
+    item => Number(item.low)
+  );
+
+  const volumes = data.map(
+    item => Number(item.volume || 0)
+  );
+
+
+  /* MA20 */
+
+  const ma20 = closes.map(
+    (_, index) =>
+      movingAverage(closes, 20, index)
+  );
+
+
+  /* MA50 */
+
+  const ma50 = closes.map(
+    (_, index) =>
+      movingAverage(closes, 50, index)
+  );
+
+
+  const minimum =
+    Math.min(...lows);
+
+  const maximum =
+    Math.max(...highs);
+
+  const priceRange =
+    maximum - minimum || 1;
+
+
+  function x(index) {
+
+    return LEFT +
+      index *
+      (W - LEFT - RIGHT) /
+      (data.length - 1);
+
+  }
+
+
+  function y(price) {
+
+    return PRICE_BOTTOM -
+      ((price - minimum) /
+      priceRange) *
+      (PRICE_BOTTOM - TOP);
+
+  }
+
+
+  const maxVolume =
+    Math.max(...volumes) || 1;
+
+
+  function volumeY(volume) {
+
+    return VOLUME_BOTTOM -
+      (volume / maxVolume) *
+      (VOLUME_BOTTOM - VOLUME_TOP);
+
+  }
+
+
+  const candleWidth =
+    Math.max(
+      2,
+      ((W - LEFT - RIGHT) /
+      data.length) * 0.65
+    );
+
+
+  let svg =
+    `<svg
+      viewBox="0 0 ${W} ${H}"
+      preserveAspectRatio="none"
+    >`;
+
+
+  /* PRICE GRID */
+
+  for (let i = 0; i <= 4; i++) {
+
+    const yy =
+      TOP +
+      i *
+      (PRICE_BOTTOM - TOP) / 4;
+
+    const price =
+      maximum -
+      i *
+      priceRange / 4;
+
+
+    svg += `
+      <line
+        x1="${LEFT}"
+        y1="${yy}"
+        x2="${W - RIGHT}"
+        y2="${yy}"
+        stroke="#29415e"
+      />
+
+      <text
+        x="4"
+        y="${yy + 4}"
+        fill="#8194ad"
+        font-size="11"
+      >
+        ₹${formatNumber(price)}
+      </text>
+    `;
+
+  }
+
+
+  /* VOLUME SEPARATOR */
+
+  svg += `
+    <line
+      x1="${LEFT}"
+      y1="${VOLUME_TOP - 8}"
+      x2="${W - RIGHT}"
+      y2="${VOLUME_TOP - 8}"
+      stroke="#29415e"
+    />
+
+    <text
+      x="${LEFT}"
+      y="${VOLUME_TOP + 8}"
+      fill="#8194ad"
+      font-size="10"
+    >
+      VOLUME
+    </text>
+  `;
+
+
+  /* CANDLESTICKS */
+
+  data.forEach(
+    (item, index) => {
+
+      const xx = x(index);
+
+      const open =
+        Number(item.open);
+
+      const close =
+        Number(item.close);
+
+      const high =
+        Number(item.high);
+
+      const low =
+        Number(item.low);
+
+      const isBullish =
+        close >= open;
+
+      const candleColor =
+        isBullish
+          ? "#46d39a"
+          : "#ff6b7a";
+
+
+      /* Volume */
+
+      svg += `
+        <rect
+          x="${xx - candleWidth / 2}"
+          y="${volumeY(volumes[index])}"
+          width="${candleWidth}"
+          height="${
+            VOLUME_BOTTOM -
+            volumeY(volumes[index])
+          }"
+          fill="${candleColor}"
+          opacity="0.30"
+        />
+      `;
+
+
+      /* Wick */
+
+      svg += `
+        <line
+          x1="${xx}"
+          y1="${y(high)}"
+          x2="${xx}"
+          y2="${y(low)}"
+          stroke="${candleColor}"
+          stroke-width="1.3"
+        />
+      `;
+
+
+      /* Body */
+
+      const bodyTop =
+        Math.min(
+          y(open),
+          y(close)
+        );
+
+      const bodyHeight =
+        Math.max(
+          1,
+          Math.abs(
+            y(open) -
+            y(close)
+          )
+        );
+
+
+      svg += `
+        <rect
+          x="${xx - candleWidth / 2}"
+          y="${bodyTop}"
+          width="${candleWidth}"
+          height="${bodyHeight}"
+          fill="${candleColor}"
+        />
+      `;
+
+    }
+  );
+
+
+  /* MOVING AVERAGE PATH */
+
+  function createPath(values) {
+
+    let path = "";
+
+    values.forEach(
+      (value, index) => {
+
+        if (value === null) {
+          return;
+        }
+
+        path +=
+          (path ? "L" : "M") +
+          x(index).toFixed(1) +
+          " " +
+          y(value).toFixed(1) +
+          " ";
+
+      }
+    );
+
+    return path;
+
+  }
+
+
+  /* MA20 */
+
+  svg += `
+    <path
+      d="${createPath(ma20)}"
+      fill="none"
+      stroke="#60a5fa"
+      stroke-width="2.5"
+    />
+  `;
+
+
+  /* MA50 */
+
+  svg += `
+    <path
+      d="${createPath(ma50)}"
+      fill="none"
+      stroke="#f4c95d"
+      stroke-width="2.5"
+    />
+  `;
+
+
+  /* DATES */
+
+  svg += `
+    <text
+      x="${LEFT}"
+      y="${H - 8}"
+      fill="#8194ad"
+      font-size="11"
+    >
+      ${data[0].date}
+    </text>
+
+    <text
+      x="${W - RIGHT - 75}"
+      y="${H - 8}"
+      fill="#8194ad"
+      font-size="11"
+    >
+      ${data[data.length - 1].date}
+    </text>
+  `;
+
+
+  svg += "</svg>";
+
+
+  $("chart").innerHTML = svg;
+
+
+  $("chartInfo").textContent =
+    `${data.length} trading sessions • ` +
+    `Candlesticks • MA20 • MA50 • Volume`;
+
+}
+
+
+/* ==============================
+   LOAD STOCK
+================================ */
+
+async function loadStock() {
+
+  const symbol =
+    $("symbol")
+      .value
+      .trim()
+      .toUpperCase();
+
+
+  if (!symbol) {
+
+    return;
+
+  }
+
+
+  $("status").textContent =
+    "Loading market data...";
+
+
+  try {
+
+    const response =
+      await fetch(
+        "/api/stock?symbol=" +
+        encodeURIComponent(symbol) +
+        "&range=" +
+        $("range").value
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Unable to load stock"
+      );
+
+    }
+
+
+    /* Signal */
+
+    $("signal").textContent =
+      data.signal +
+      " — " +
+      data.symbol;
+
+
+    $("signal").className =
+      data.signal === "BULLISH"
+        ? "bull"
+        : data.signal === "BEARISH"
+        ? "bear"
+        : "neutral";
+
+
+    /* Metrics */
+
+    $("price").textContent =
+      "₹" +
+      formatNumber(data.last);
+
+
+    $("change").textContent =
+      (data.change >= 0 ? "+" : "") +
+      formatNumber(data.change) +
+      "%";
+
+
+    $("rsi").textContent =
+      formatNumber(data.rsi);
+
+
+    $("score").textContent =
+      data.score +
+      "/100";
+
+
+    /* Chart */
+
+    drawChart(data.history);
+
+
+    $("results").style.display =
+      "block";
+
+
+    $("status").textContent =
+      "Chart updated successfully.";
+
+  }
+
+  catch (error) {
+
+    $("status").textContent =
+      error.message ||
+      "Unable to load market data.";
+
+  }
+
+}
+
+
+/* ENTER KEY */
+
+$("symbol").addEventListener(
+  "keydown",
+  event => {
+
+    if (event.key === "Enter") {
+
+      loadStock();
+
+    }
+
+  }
+);
+
+
+/* DEFAULT */
+
+loadStock();
+
+</script>
+
+</body>
+</html>
