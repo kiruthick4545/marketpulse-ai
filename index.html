@@ -68,6 +68,16 @@ body {
   margin-bottom: 8px;
 }
 
+/* BRAND LOGO - LOGIN */
+
+.auth-logo img {
+  width: 75px;
+  height: 75px;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
 .auth-title {
   text-align: center;
   font-size: 28px;
@@ -209,6 +219,20 @@ h1 {
   margin: 0;
   font-size: 34px;
   letter-spacing: -0.5px;
+}
+
+/* BRAND LOGO - DASHBOARD */
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.dashboard-title img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
 }
 
 .subtitle {
@@ -810,7 +834,7 @@ button:hover {
   <div class="auth-card">
 
     <div class="auth-logo">
-      📈
+      <img src="/logo.jpg" alt="MarketPulse AI Logo">
     </div>
 
     <h1 class="auth-title">
@@ -922,8 +946,9 @@ button:hover {
 
   <div>
 
-    <h1>
-      📈 MarketPulse AI
+    <h1 class="dashboard-title">
+      <img src="/logo.jpg" alt="MarketPulse AI Logo">
+      MarketPulse AI
     </h1>
 
     <p class="subtitle">
@@ -1550,7 +1575,7 @@ const SUPABASE_URL =
   "https://kbjgbwpxzvhprqiailzo.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_o84OIusV9u-5lqe32-kB2A_NXtXTCJ6";
+  "sb_publishable_o84OIusV9u-5lqe32kB2A_NXtXTCJ6";
 
 const supabaseClient =
   window.supabase.createClient(
