@@ -12,10 +12,25 @@
 <script src="https://unpkg.com/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
 
 <style>
-
 /* =====================================================
-   GLOBAL
+   MARKETPULSE AI — BLACK / GOLD / SILVER THEME
 ===================================================== */
+
+:root {
+  --bg: #080808;
+  --surface: #111111;
+  --surface-2: #181818;
+  --surface-3: #202020;
+  --gold: #d4af37;
+  --gold-light: #f0d77a;
+  --silver: #c0c0c0;
+  --silver-muted: #929292;
+  --text: #f5f5f5;
+  --muted: #999999;
+  --border: #34302a;
+  --green: #39c98a;
+  --red: #ed6672;
+}
 
 * {
   box-sizing: border-box;
@@ -23,18 +38,13 @@
 
 body {
   margin: 0;
-  background: #07111f;
-  color: #eaf2ff;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
 }
 
-/* =====================================================
-   LOGIN PAGE
-===================================================== */
+/* LOGIN PAGE */
 
 #authPage {
   min-height: 100vh;
@@ -43,23 +53,20 @@ body {
   justify-content: center;
   padding: 25px;
   background:
-    radial-gradient(
-      circle at top,
-      #10294a 0%,
-      #07111f 45%,
-      #050c16 100%
-    );
+    radial-gradient(circle at top,
+      #29220f 0%,
+      #11100c 35%,
+      #050505 100%);
 }
 
 .auth-card {
   width: 100%;
   max-width: 430px;
-  background: #0d1a2b;
-  border: 1px solid #263d59;
+  background: linear-gradient(145deg, #171717, #0d0d0d);
+  border: 1px solid #665323;
   border-radius: 20px;
   padding: 32px;
-  box-shadow:
-    0 25px 70px rgba(0,0,0,0.35);
+  box-shadow: 0 25px 70px rgba(0,0,0,0.65);
 }
 
 .auth-logo {
@@ -67,8 +74,6 @@ body {
   font-size: 42px;
   margin-bottom: 8px;
 }
-
-/* BRAND LOGO - LOGIN */
 
 .auth-logo img {
   width: 75px;
@@ -82,11 +87,12 @@ body {
   text-align: center;
   font-size: 28px;
   margin: 0;
+  color: var(--gold-light);
 }
 
 .auth-subtitle {
   text-align: center;
-  color: #8194ad;
+  color: var(--silver-muted);
   margin: 8px 0 28px;
   font-size: 14px;
 }
@@ -94,7 +100,7 @@ body {
 .auth-label {
   display: block;
   margin-bottom: 7px;
-  color: #cbd8e8;
+  color: var(--silver);
   font-size: 13px;
   font-weight: 600;
 }
@@ -111,8 +117,8 @@ body {
   width: 100%;
   height: 48px;
   border-radius: 9px;
-  border: 1px solid #29415e;
-  background: #081525;
+  border: 1px solid #494235;
+  background: #090909;
   color: white;
   padding: 0 45px 0 14px;
   font-size: 15px;
@@ -120,7 +126,8 @@ body {
 }
 
 .auth-input:focus {
-  border-color: #3b82f6;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 2px rgba(212,175,55,0.12);
 }
 
 .password-toggle {
@@ -134,29 +141,29 @@ body {
   width: 35px;
   height: 35px;
   padding: 0;
-  color: #8194ad;
+  color: var(--silver);
   font-size: 18px;
 }
 
 .password-toggle:hover {
   background: transparent;
-  color: white;
+  color: var(--gold);
 }
 
 .auth-button {
   width: 100%;
   height: 48px;
   border-radius: 9px;
-  border: none;
-  background: #2563eb;
-  color: white;
-  font-weight: 700;
+  border: 1px solid var(--gold);
+  background: linear-gradient(135deg, #e3c45c, #b18a20);
+  color: #080808;
+  font-weight: 800;
   cursor: pointer;
   font-size: 15px;
 }
 
 .auth-button:hover {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #f2dc87, #d4af37);
 }
 
 .auth-button:disabled {
@@ -169,32 +176,30 @@ body {
   margin-top: 15px;
   text-align: center;
   font-size: 13px;
-  color: #8194ad;
+  color: var(--silver-muted);
 }
 
 .auth-status.error {
-  color: #ff6575;
+  color: var(--red);
 }
 
 .auth-status.success {
-  color: #46d39a;
+  color: var(--green);
 }
 
 .auth-note {
   margin-top: 22px;
   padding: 12px;
-  background: #081525;
-  border: 1px solid #1d344f;
+  background: #0a0a0a;
+  border: 1px solid #373126;
   border-radius: 9px;
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 12px;
   line-height: 1.5;
   text-align: center;
 }
 
-/* =====================================================
-   DASHBOARD
-===================================================== */
+/* DASHBOARD */
 
 #dashboardPage {
   display: none;
@@ -221,12 +226,11 @@ h1 {
   letter-spacing: -0.5px;
 }
 
-/* BRAND LOGO - DASHBOARD */
-
 .dashboard-title {
   display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--gold-light);
 }
 
 .dashboard-title img {
@@ -236,7 +240,7 @@ h1 {
 }
 
 .subtitle {
-  color: #8194ad;
+  color: var(--silver-muted);
   margin-top: 7px;
   font-size: 17px;
 }
@@ -248,7 +252,7 @@ h1 {
 }
 
 .user-email {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 12px;
   max-width: 220px;
   overflow: hidden;
@@ -258,27 +262,25 @@ h1 {
 .logout-btn {
   height: 40px;
   min-width: 90px;
-  background: #351d29;
-  color: #ff6575;
-  border: 1px solid #5a2a3a;
+  background: #211b12;
+  color: var(--gold-light);
+  border: 1px solid #695322;
   font-size: 13px;
 }
 
 .logout-btn:hover {
-  background: #4a2432;
+  background: #332813;
 }
 
 .card {
-  background: #0d1a2b;
-  border: 1px solid #263d59;
+  background: linear-gradient(145deg, #151515, #101010);
+  border: 1px solid #34302a;
   border-radius: 16px;
   padding: 20px;
   margin-top: 18px;
 }
 
-/* =====================================================
-   SEARCH
-===================================================== */
+/* SEARCH */
 
 .search {
   display: flex;
@@ -291,8 +293,8 @@ select,
 button {
   height: 46px;
   border-radius: 9px;
-  border: 1px solid #29415e;
-  background: #081525;
+  border: 1px solid #494235;
+  background: #090909;
   color: white;
   padding: 0 14px;
   font-size: 15px;
@@ -308,24 +310,27 @@ select {
 }
 
 button {
-  background: #2563eb;
-  border: none;
-  font-weight: 700;
+  background: linear-gradient(135deg, #e3c45c, #b18a20);
+  color: #090909;
+  border: 1px solid var(--gold);
+  font-weight: 800;
   cursor: pointer;
   min-width: 140px;
 }
 
 button:hover {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #f2dc87, #d4af37);
 }
 
 .secondary-btn {
-  background: #172a43;
-  border: 1px solid #29415e;
+  background: #24211a;
+  color: var(--silver);
+  border: 1px solid #65542c;
 }
 
 .secondary-btn:hover {
-  background: #203a5c;
+  background: #332b1b;
+  color: var(--gold-light);
 }
 
 .watch-btn {
@@ -333,19 +338,18 @@ button:hover {
 }
 
 .watch-btn.added {
-  background: #173b31;
-  color: #46d39a;
+  background: #17382b;
+  color: var(--green);
+  border-color: #276a4d;
 }
 
 #status {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 13px;
   margin-bottom: 0;
 }
 
-/* =====================================================
-   WATCHLIST
-===================================================== */
+/* WATCHLIST */
 
 .watchlist-header {
   display: flex;
@@ -358,10 +362,11 @@ button:hover {
 .watchlist-title {
   margin: 0;
   font-size: 22px;
+  color: var(--gold-light);
 }
 
 .watchlist-subtitle {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 13px;
   margin: 5px 0 0;
 }
@@ -374,8 +379,8 @@ button:hover {
 }
 
 .watch-card {
-  background: #081525;
-  border: 1px solid #1d344f;
+  background: #0b0b0b;
+  border: 1px solid #3b3528;
   border-radius: 13px;
   padding: 16px;
 }
@@ -390,12 +395,14 @@ button:hover {
 .watch-symbol {
   font-size: 19px;
   font-weight: 800;
+  color: var(--gold-light);
 }
 
 .watch-price {
   font-size: 18px;
   font-weight: 700;
   margin-top: 8px;
+  color: var(--silver);
 }
 
 .watch-meta {
@@ -406,13 +413,13 @@ button:hover {
 }
 
 .watch-stat {
-  background: #0d1a2b;
+  background: #181818;
   border-radius: 8px;
   padding: 9px;
 }
 
 .watch-stat-title {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 10px;
 }
 
@@ -420,6 +427,7 @@ button:hover {
   margin-top: 3px;
   font-weight: 700;
   font-size: 13px;
+  color: var(--silver);
 }
 
 .watch-actions {
@@ -437,12 +445,13 @@ button:hover {
 }
 
 .remove-watch {
-  background: #351d29;
-  color: #ff6575;
+  background: #351d20;
+  color: var(--red);
+  border: 1px solid #633037;
 }
 
 .remove-watch:hover {
-  background: #4a2432;
+  background: #4a252b;
 }
 
 .signal-badge {
@@ -453,24 +462,24 @@ button:hover {
 }
 
 .signal-bull {
-  background: rgba(70,211,154,0.12);
-  color: #46d39a;
+  background: rgba(57,201,138,0.12);
+  color: var(--green);
 }
 
 .signal-bear {
-  background: rgba(255,101,117,0.12);
-  color: #ff6575;
+  background: rgba(237,102,114,0.12);
+  color: var(--red);
 }
 
 .signal-neutral {
-  background: rgba(244,201,93,0.12);
-  color: #f4c95d;
+  background: rgba(212,175,55,0.12);
+  color: var(--gold-light);
 }
 
 .empty-watchlist {
   text-align: center;
   padding: 30px 10px;
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 14px;
 }
 
@@ -479,15 +488,13 @@ button:hover {
   margin-top: 15px;
   padding: 12px 14px;
   border-radius: 9px;
-  background: #10253b;
-  border: 1px solid #285078;
-  color: #c9dcf2;
+  background: #211c11;
+  border: 1px solid #695322;
+  color: var(--gold-light);
   font-size: 13px;
 }
 
-/* =====================================================
-   LANDING
-===================================================== */
+/* LANDING */
 
 .landing {
   margin-top: 25px;
@@ -496,10 +503,11 @@ button:hover {
 .section-title {
   font-size: 22px;
   margin: 0 0 7px;
+  color: var(--gold-light);
 }
 
 .section-subtitle {
-  color: #8194ad;
+  color: var(--silver-muted);
   margin: 0 0 20px;
   line-height: 1.6;
 }
@@ -511,19 +519,17 @@ button:hover {
 }
 
 .feature {
-  background: #081525;
-  border: 1px solid #1d344f;
+  background: #0c0c0c;
+  border: 1px solid #39342a;
   border-radius: 13px;
   padding: 18px;
   min-height: 150px;
-  transition:
-    transform 0.2s,
-    border-color 0.2s;
+  transition: transform 0.2s, border-color 0.2s;
 }
 
 .feature:hover {
   transform: translateY(-3px);
-  border-color: #3569a3;
+  border-color: var(--gold);
 }
 
 .feature-icon {
@@ -534,18 +540,17 @@ button:hover {
 .feature h3 {
   font-size: 15px;
   margin: 0 0 7px;
+  color: var(--silver);
 }
 
 .feature p {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 13px;
   line-height: 1.55;
   margin: 0;
 }
 
-/* =====================================================
-   HOW IT WORKS
-===================================================== */
+/* HOW IT WORKS */
 
 .steps {
   display: grid;
@@ -555,14 +560,14 @@ button:hover {
 
 .step {
   position: relative;
-  background: #081525;
-  border: 1px solid #1d344f;
+  background: #0c0c0c;
+  border: 1px solid #39342a;
   border-radius: 13px;
   padding: 18px;
 }
 
 .step-number {
-  color: #4f8cff;
+  color: var(--gold);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 1px;
@@ -571,36 +576,30 @@ button:hover {
 .step h3 {
   margin: 8px 0 5px;
   font-size: 15px;
+  color: var(--silver);
 }
 
 .step p {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 13px;
   margin: 0;
   line-height: 1.5;
 }
 
-/* =====================================================
-   TERMS
-===================================================== */
+/* TERMS */
 
 .terms-card {
-  background:
-    linear-gradient(
-      145deg,
-      #0d1a2b,
-      #0a1625
-    );
+  background: linear-gradient(145deg, #171717, #101010);
 }
 
 .terms-content {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 13px;
   line-height: 1.7;
 }
 
 .terms-content strong {
-  color: #dce8f7;
+  color: var(--gold-light);
 }
 
 .terms-list {
@@ -612,9 +611,7 @@ button:hover {
   margin-bottom: 6px;
 }
 
-/* =====================================================
-   TRUST
-===================================================== */
+/* TRUST */
 
 .trust-bar {
   display: flex;
@@ -622,7 +619,7 @@ button:hover {
   gap: 35px;
   flex-wrap: wrap;
   margin-top: 20px;
-  color: #8194ad;
+  color: var(--silver);
   font-size: 12px;
 }
 
@@ -632,9 +629,7 @@ button:hover {
   gap: 7px;
 }
 
-/* =====================================================
-   RESULTS
-===================================================== */
+/* RESULTS */
 
 .metrics {
   display: grid;
@@ -643,13 +638,14 @@ button:hover {
 }
 
 .metric {
-  background: #081525;
+  background: #0b0b0b;
+  border: 1px solid #302b22;
   padding: 14px;
   border-radius: 10px;
 }
 
 .metric-title {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 12px;
 }
 
@@ -657,23 +653,22 @@ button:hover {
   margin-top: 5px;
   font-size: 20px;
   font-weight: 700;
+  color: var(--gold-light);
 }
 
 .bull {
-  color: #46d39a;
+  color: var(--green);
 }
 
 .bear {
-  color: #ff6575;
+  color: var(--red);
 }
 
 .neutral {
-  color: #f4c95d;
+  color: var(--gold-light);
 }
 
-/* =====================================================
-   CHART
-===================================================== */
+/* CHART */
 
 .chart-header {
   display: flex;
@@ -683,11 +678,15 @@ button:hover {
   gap: 10px;
 }
 
+.chart-header h3 {
+  color: var(--gold-light);
+}
+
 .legend {
   display: flex;
   gap: 15px;
   flex-wrap: wrap;
-  color: #a5b5c9;
+  color: var(--silver);
   font-size: 13px;
 }
 
@@ -715,7 +714,7 @@ button:hover {
 }
 
 .chart-label {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 12px;
   margin-bottom: -8px;
   position: relative;
@@ -723,17 +722,14 @@ button:hover {
 }
 
 .notice {
-  color: #8194ad;
+  color: var(--silver-muted);
   font-size: 12px;
   line-height: 1.6;
 }
 
-/* =====================================================
-   MOBILE
-===================================================== */
+/* MOBILE */
 
 @media(max-width: 900px) {
-
   .watchlist-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -741,11 +737,9 @@ button:hover {
   .metrics {
     grid-template-columns: repeat(3, 1fr);
   }
-
 }
 
 @media(max-width: 800px) {
-
   .container {
     width: 92%;
     padding-top: 25px;
@@ -759,10 +753,7 @@ button:hover {
     font-size: 15px;
   }
 
-  .features {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
+  .features,
   .steps {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -774,11 +765,9 @@ button:hover {
   #rsiChart {
     height: 160px;
   }
-
 }
 
 @media(max-width: 500px) {
-
   .auth-card {
     padding: 25px 20px;
   }
@@ -816,11 +805,8 @@ button:hover {
     gap: 15px;
     justify-content: flex-start;
   }
-
 }
-
 </style>
-
 </head>
 
 <body>
