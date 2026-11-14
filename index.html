@@ -806,6 +806,299 @@ button:hover {
     justify-content: flex-start;
   }
 }
+/* =====================================================
+   SUBSCRIPTION SECTION — LOGIN PAGE ONLY
+===================================================== */
+
+#authPage {
+  flex-direction: column;
+  justify-content: flex-start;
+  padding-top: 45px;
+}
+
+.subscription-section {
+  width: 100%;
+  max-width: 1000px;
+  margin: 35px auto 20px;
+  padding: 0 5px;
+}
+
+.subscription-heading {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.subscription-heading .eyebrow {
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.subscription-heading h2 {
+  font-size: 30px;
+  color: var(--gold-light);
+  margin: 10px 0;
+}
+
+.subscription-heading p {
+  color: var(--silver-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 17px;
+}
+
+.plan-card {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  background: linear-gradient(145deg, #191919, #0c0c0c);
+  border: 1px solid #40392b;
+  border-radius: 17px;
+  transition: .25s ease;
+}
+
+.plan-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 35px rgba(212,175,55,.10);
+}
+
+.plan-card.popular {
+  border-color: var(--gold);
+  background: linear-gradient(145deg, #282111, #11100c);
+}
+
+.plan-tag {
+  display: inline-block;
+  padding: 6px 10px;
+  background: rgba(212,175,55,.12);
+  border: 1px solid #695323;
+  border-radius: 20px;
+  color: var(--gold-light);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.plan-card h3 {
+  color: var(--silver);
+  font-size: 20px;
+  margin: 15px 0 5px;
+}
+
+.plan-duration {
+  color: var(--silver-muted);
+  font-size: 13px;
+}
+
+.plan-price {
+  font-size: 34px;
+  font-weight: 850;
+  color: var(--gold-light);
+  margin: 20px 0 5px;
+}
+
+.plan-price small {
+  font-size: 13px;
+  color: var(--silver-muted);
+  font-weight: 400;
+}
+
+.plan-description {
+  color: var(--silver-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 42px;
+}
+
+.plan-button {
+  width: 100%;
+  height: 46px;
+  margin-top: 18px;
+  border-radius: 9px;
+  border: 1px solid var(--gold);
+  background: linear-gradient(135deg,#e3c45c,#b18a20);
+  color: #080808;
+  font-weight: 850;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.plan-button:hover {
+  background: linear-gradient(135deg,#f2dc87,#d4af37);
+}
+
+.lifetime-card {
+  margin-top: 20px;
+  padding: 27px;
+  border: 1px solid #b18a20;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, #423416 0%, transparent 45%),
+    linear-gradient(135deg,#1c1910,#0d0d0d);
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  align-items: center;
+  gap: 25px;
+}
+
+.lifetime-card h3 {
+  color: var(--gold-light);
+  font-size: 24px;
+  margin: 12px 0;
+}
+
+.lifetime-card p {
+  color: var(--silver-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.lifetime-price {
+  font-size: 38px;
+  color: var(--gold-light);
+  font-weight: 850;
+}
+
+.lifetime-price span {
+  display: block;
+  font-size: 12px;
+  color: var(--silver-muted);
+  font-weight: 400;
+}
+
+.lifetime-card .plan-button {
+  margin-top: 15px;
+}
+
+.included-section {
+  margin-top: 38px;
+}
+
+.included-heading {
+  text-align: center;
+  margin-bottom: 23px;
+}
+
+.included-heading h2 {
+  color: var(--gold-light);
+  font-size: 26px;
+  margin: 0 0 9px;
+}
+
+.included-heading p {
+  color: var(--silver-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.included-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.included-card {
+  position: relative;
+  padding: 21px;
+  background: linear-gradient(145deg,#171717,#0c0c0c);
+  border: 1px solid #39342a;
+  border-radius: 15px;
+  transition: .25s ease;
+}
+
+.included-card:hover {
+  border-color: #9b7a2b;
+  transform: translateY(-3px);
+}
+
+.included-icon {
+  width: 43px;
+  height: 43px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(212,175,55,.12);
+  border: 1px solid #514323;
+  border-radius: 11px;
+  font-size: 21px;
+  margin-bottom: 14px;
+}
+
+.included-card h3 {
+  font-size: 16px;
+  color: var(--gold-light);
+  margin: 0 0 9px;
+}
+
+.included-card p {
+  color: var(--silver-muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.included-card ul {
+  padding-left: 18px;
+  margin: 12px 0 0;
+  color: var(--silver);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.subscription-footer {
+  text-align: center;
+  color: var(--silver-muted);
+  font-size: 12px;
+  line-height: 1.7;
+  margin: 25px 0 15px;
+}
+
+.subscription-footer strong {
+  color: var(--gold-light);
+}
+
+.subscription-status {
+  min-height: 20px;
+  color: var(--gold-light);
+  text-align: center;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+@media(max-width:650px) {
+  #authPage {
+    padding: 25px 15px;
+  }
+
+  .subscription-section {
+    padding: 0;
+  }
+
+  .subscription-heading h2 {
+    font-size: 25px;
+  }
+
+  .plan-grid,
+  .included-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lifetime-card {
+    grid-template-columns: 1fr;
+  }
+
+  .lifetime-price {
+    font-size: 32px;
+  }
+}
 </style>
 </head>
 
