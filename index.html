@@ -2600,7 +2600,26 @@ supabaseClient.auth.onAuthStateChange(
   }
 
 );
+/* =====================================================
+   SUBSCRIPTION PLAN SELECTION
+===================================================== */
 
+function choosePlan(plan, price) {
+
+  const status = document.getElementById(
+    "subscriptionStatus"
+  );
+
+  status.textContent =
+    "Selected: " + plan + " — " + price +
+    ". Payment checkout is not connected yet.";
+
+  status.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+
+}
 /* =====================================================
    GLOBAL VARIABLES
 ===================================================== */
