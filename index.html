@@ -1099,6 +1099,9 @@ button:hover {
     font-size: 32px;
   }
 }
+
+/* IPO RADAR — ADDITIVE STYLES */
+.ipo-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:15px 0}.ipo-toolbar select{min-width:150px}.ipo-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:15px 0}.ipo-table-wrap{width:100%;overflow-x:auto}.ipo-table{width:100%;border-collapse:collapse;min-width:850px;font-size:13px}.ipo-table th,.ipo-table td{padding:12px 10px;border-bottom:1px solid #34302a;text-align:left;white-space:nowrap}.ipo-table th{color:var(--gold-light);background:#181818}.ipo-table td{color:var(--silver)}.ipo-gmp-positive{color:var(--green)!important;font-weight:800}.ipo-gmp-negative{color:var(--red)!important;font-weight:800}.ipo-recommend{border:1px solid #695323;background:linear-gradient(145deg,#211b0e,#101010);border-radius:12px;padding:16px;margin:15px 0}.ipo-recommend h3{color:var(--gold-light);margin:0 0 8px}.ipo-note{color:var(--silver-muted);font-size:12px;line-height:1.65}.ipo-status-pill{display:inline-block;border:1px solid #65542c;border-radius:20px;padding:4px 8px;font-size:11px;color:var(--gold-light)}.ipo-link{color:var(--gold-light);text-decoration:none}.ipo-link:hover{text-decoration:underline}@media(max-width:600px){.ipo-summary{grid-template-columns:1fr 1fr}.ipo-toolbar select,.ipo-toolbar button{width:100%}}
 </style>
 </head>
 
@@ -1713,6 +1716,17 @@ button:hover {
     class="watchlist-grid"
   ></div>
 
+</div>
+
+
+<!-- IPO RADAR — ADDITIVE DASHBOARD SECTION -->
+<div class="card" id="ipoRadarSection">
+ <div class="watchlist-header"><div><h2 class="watchlist-title">🚀 IPO Radar — GMP & IPO Research</h2><p class="watchlist-subtitle">Track upcoming and open IPOs, grey-market premium and indicative listing sentiment.</p></div><button class="secondary-btn" onclick="loadIPORadar()">↻ Refresh IPOs</button></div>
+ <div class="ipo-summary"><div class="metric"><div class="metric-title">IPOs IN FEED</div><div class="metric-value" id="ipoCount">—</div></div><div class="metric"><div class="metric-title">HIGHEST GMP</div><div class="metric-value" id="ipoHighestGmp">—</div></div><div class="metric"><div class="metric-title">FEED UPDATED</div><div class="metric-value" id="ipoUpdated" style="font-size:13px">—</div></div></div>
+ <div class="ipo-recommend"><h3>⭐ Best GMP Signal to Research</h3><div id="ipoBestText" class="ipo-note">Loading IPO data...</div></div>
+ <div class="ipo-toolbar"><select id="ipoStatusFilter" onchange="renderIPORadar()"><option value="all">All IPOs in feed</option><option value="open">Open IPOs</option><option value="upcoming">Upcoming IPOs</option></select><select id="ipoTypeFilter" onchange="renderIPORadar()"><option value="all">Mainboard + SME</option><option value="mainboard">Mainboard only</option><option value="sme">SME only</option></select></div>
+ <div id="ipoRadarStatus" class="ipo-note">Fetching IPO information...</div><div class="ipo-table-wrap"><table class="ipo-table"><thead><tr><th>IPO</th><th>Type</th><th>Status</th><th>GMP</th><th>Est. Gain</th><th>Price</th><th>Subscription</th><th>Open / Close</th><th>Details</th></tr></thead><tbody id="ipoTableBody"><tr><td colspan="9">Loading...</td></tr></tbody></table></div>
+ <p class="ipo-note" style="margin-top:14px">GMP is unofficial grey-market information, not an NSE/BSE or SEBI-published figure and not a reliable prediction of listing price. A high GMP alone does not make an IPO suitable. Review the RHP, valuation, financials, risks, issue size and your own risk tolerance. SME IPOs can have substantially higher liquidity and risk. Data attribution: <a class="ipo-link" href="https://gmptoday.in" target="_blank" rel="noopener">gmptoday.in</a> (CC BY 4.0). <a class="ipo-link" href="https://gmptoday.in/api/" target="_blank" rel="noopener">API documentation</a>.</p>
 </div>
 
 <!-- =====================================================
@@ -4349,6 +4363,31 @@ async function loadStock() {
 
 }
 
+/* IPO RADAR — ADDITIVE DATA & RENDERING */
+let ipoRadarData=[];
+function ipoNum(v){if(v===null||v===undefined||v==="")return null;const n=Number(v);return Number.isFinite(n)?n:null;}
+function ipoDate(v){if(!v)return "—";const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleDateString("en-IN",{day:"2-digit",month:"short"});}
+function ipoEsc(v){return String(v??"—").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function loadIPORadar(){
+ const status=document.getElementById("ipoRadarStatus"),body=document.getElementById("ipoTableBody");if(!status||!body)return;status.textContent="Refreshing IPO GMP feed...";
+ try{
+  const res=await fetch("https://gmptoday.in/api/gmp.json",{cache:"no-store"});if(!res.ok)throw new Error("IPO feed HTTP "+res.status);const payload=await res.json();if(!Array.isArray(payload.ipos))throw new Error("Unrecognized IPO feed format");
+  ipoRadarData=payload.ipos.map(x=>({...x,gmpValue:ipoNum(x.gmp_median),gainValue:ipoNum(x.est_listing_gain_pct),issuePrice:ipoNum(x.price_band),sources:ipoNum(x.gmp_sources)||0}));
+  document.getElementById("ipoCount").textContent=ipoRadarData.length;
+  const high=ipoRadarData.filter(x=>x.gmpValue!==null).sort((a,b)=>b.gmpValue-a.gmpValue)[0];document.getElementById("ipoHighestGmp").textContent=high?"₹"+formatNumber(high.gmpValue):"—";
+  const updated=payload.updated_at||payload.generated_at;document.getElementById("ipoUpdated").textContent=updated?new Date(updated).toLocaleString("en-IN",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"Not provided";
+  const ranked=ipoRadarData.filter(x=>x.gainValue!==null).sort((a,b)=>((b.gainValue*.65)+(Math.min(b.sources,10)*.35)+(String(b.type).toLowerCase()==="mainboard"?2:0))-((a.gainValue*.65)+(Math.min(a.sources,10)*.35)+(String(a.type).toLowerCase()==="mainboard"?2:0)));
+  const pick=ranked[0];document.getElementById("ipoBestText").innerHTML=pick?`<strong>${ipoEsc(pick.name)}</strong> (${ipoEsc(pick.type)}) leads this feed's indicative GMP shortlist: ${pick.gainValue.toFixed(2)}% estimated GMP-based gain, with ${pick.sources} reporting sources. This is a research lead only—not an instruction to apply. Verify the latest GMP, subscription, RHP, valuation and risks.`:"No IPO has estimated-gain data for a shortlist in this feed.";
+  const age=updated?Date.now()-new Date(updated).getTime():Infinity;status.textContent=`Source: ${payload.attribution||"gmptoday.in"}. ${payload.sample?"Sample feed only; it does not contain every IPO. ":""}${age>21600000?"Warning: feed timestamp is over 6 hours old; treat figures as stale.":""}`;renderIPORadar();
+ }catch(e){console.error("IPO Radar:",e);status.textContent="Unable to load IPO data: "+e.message+" Please retry later.";body.innerHTML='<tr><td colspan="9">IPO data temporarily unavailable.</td></tr>';document.getElementById("ipoBestText").textContent="No live shortlist can be generated while the feed is unavailable.";}
+}
+function renderIPORadar(){
+ const body=document.getElementById("ipoTableBody");if(!body)return;const sf=document.getElementById("ipoStatusFilter")?.value||"all",tf=document.getElementById("ipoTypeFilter")?.value||"all";
+ const rows=ipoRadarData.filter(x=>(sf==="all"||String(x.status||"").toLowerCase().includes(sf))&&(tf==="all"||String(x.type||"").toLowerCase()===tf)).sort((a,b)=>(b.gainValue??-999)-(a.gainValue??-999));
+ if(!rows.length){body.innerHTML='<tr><td colspan="9">No IPOs match this filter in the current feed.</td></tr>';return;}
+ body.innerHTML=rows.map(x=>{const g=x.gmpValue===null?"Not available":`${x.gmpValue>=0?"+":""}₹${formatNumber(x.gmpValue)}`,gain=x.gainValue===null?"—":`${x.gainValue>=0?"+":""}${x.gainValue.toFixed(2)}%`,cls=x.gmpValue>0?"ipo-gmp-positive":x.gmpValue<0?"ipo-gmp-negative":"",dates=`${ipoDate(x.open_date)} – ${ipoDate(x.close_date)}`,link=x.url?`<a class="ipo-link" href="${ipoEsc(x.url)}" target="_blank" rel="noopener">View</a>`:"—";return `<tr><td><strong>${ipoEsc(x.name)}</strong><br><span class="ipo-note">${ipoEsc(x.issue_size||"")}</span></td><td>${ipoEsc(x.type)}</td><td><span class="ipo-status-pill">${ipoEsc(x.status)}</span></td><td class="${cls}">${g}<br><span class="ipo-note">${x.sources} sources · ${ipoEsc(x.confidence||"")}</span></td><td>${gain}</td><td>${x.issuePrice===null?ipoEsc(x.price_band||"—"):"₹"+formatNumber(x.issuePrice)}</td><td>${x.subscription==null?"Not reported":ipoEsc(x.subscription)+"x"}</td><td>${dates}</td><td>${link}</td></tr>`;}).join("");
+}
+
 /* =====================================================
    SYMBOL INPUT
 ===================================================== */
@@ -4395,6 +4434,9 @@ document.getElementById(
 renderWatchlist();
 
 updateWatchButton();
+
+// Initial IPO Radar load
+loadIPORadar();
 
 /* =====================================================
    START AUTH CHECK
